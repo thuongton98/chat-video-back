@@ -3,9 +3,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const socket = require("socket.io");
 
-const { PeerServer } = require('peer');
-
-const peerServer = PeerServer({ port: process.env.PORT||9000, path: '/myapp' });
 
 
 require('dotenv').config();
