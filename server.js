@@ -50,6 +50,9 @@ mongoose
 const io = socket(server);
 
 
+
+
+
 // xem bao nhieu nguoi online 
 var users=[]
 const addUser = ({ id,name,token}) => {
@@ -61,22 +64,15 @@ const addUser = ({ id,name,token}) => {
 
 
 }
-var allmess=[]
-const addMess = ({ name,mess,id}) => {
-  
 
 
-  const messz = { name,mess,id}
-  allmess.push(messz);
-
-
-}
 let MessDb = require('./models/mess-model')
 let RoomDb = require('./models/room-model')
 
 
 
 io.on("connection", function (socket) {
+
 
   /////
   socket.on('join-room', (data) => {
@@ -90,6 +86,8 @@ io.on("connection", function (socket) {
     })
 })
     /////
+
+  
     socket.on('user', data => {
         MessDb.find()
         .then(mess => io.emit('allmess',mess))
@@ -100,6 +98,7 @@ io.on("connection", function (socket) {
    
     
      });
+
    
      socket.on('mess', data => {
       
@@ -111,7 +110,7 @@ io.on("connection", function (socket) {
                 name:data.username,
                 mess:data.mess,
                 room_id:data.room_id,
-              
+               
                 
             });
             newMess.save()
@@ -124,32 +123,7 @@ io.on("connection", function (socket) {
           
     
            });
-           socket.on('messroom', data => {
-      
-       
-            MessDb.find()
-            .then(mess => {
-                const newMess = new MessDb({
-                    name:data.username,
-                    mess:data.mess,
-                    room_id:data.room_id,
-                  
-                    
-                });
-                newMess.save()
-    
-                const findmess = mess.filter(function(value){
-                  return (value.room_id[0]===data.room_id[0]||value.room_id[0]===data.room_id[1]) && (value.room_id[1]===data.room_id[0]||value.room_id[1]===data.room_id[1])
-                })
-                findmess.push(newMess)
-                socket.emit('messroom',findmess)
-                
-            }
-                
-                )
-              
-        
-               });
+          
            socket.on('room', data => {
              
             RoomDb.find()
@@ -168,13 +142,13 @@ io.on("connection", function (socket) {
               });
               MessDb.find()
               .then(mess =>{
-                const findmess = mess.filter(function(value){
-                  return (value.room_id[0]===data[0]||value.room_id[0]===data[1])&&(value.room_id[1]===data[0]||value.room_id[1]===data[1])
-                })
-               socket.emit('messroom',findmess)
+                
+               socket.emit('allmess',mess)
+              
               })
            socket.emit('join_room',data)
-         
+           
+           
          });
      socket.on('disconnect',data=>{
         if(users.length>0){
